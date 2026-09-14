@@ -116,6 +116,7 @@ if (import.meta.env.DEV) {
 
 export default function App() {
   const [lesson, setLesson] = useState(demoLesson);
+  const [isStartupRestoring, setIsStartupRestoring] = useState(true);
   const [activeProjectId, setActiveProjectId] = useState(null);
   const [projectList, setProjectList] = useState([]);
   const [projectListStatus, setProjectListStatus] = useState("idle");
@@ -311,7 +312,15 @@ export default function App() {
       }
     }
 
-    restoreStartupProject();
+    async function runStartupRestore() {
+      try {
+        await restoreStartupProject();
+      } finally {
+        if (!cancelled) setIsStartupRestoring(false);
+      }
+    }
+
+    runStartupRestore();
 
     return () => {
       cancelled = true;
@@ -1858,18 +1867,7 @@ export default function App() {
 
   function renderStage() {
     if (isProjectLoading) {
-      return (
-        <div className="stage">
-          <section className="panel">
-            <div className="panel__title">
-              <h2>Loading lesson...</h2>
-            </div>
-            <p className="muted">
-              Restoring the saved lesson before editing controls are available.
-            </p>
-          </section>
-        </div>
-      );
+      return <ProjectLoadingState />;
     }
 
     switch (lesson.currentStage) {
@@ -2007,6 +2005,16 @@ export default function App() {
     }
   }
 
+  if (isStartupRestoring) {
+    return (
+      <div className="app-shell app-shell--loading" aria-busy="true">
+        <main className="main-content">
+          <ProjectLoadingState />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <AppShell
       stages={stages}
@@ -2018,5 +2026,20 @@ export default function App() {
     >
       {renderStage()}
     </AppShell>
+  );
+}
+
+function ProjectLoadingState() {
+  return (
+    <div className="stage">
+      <section className="panel">
+        <div className="panel__title">
+          <h2>Loading lesson...</h2>
+        </div>
+        <p className="muted">
+          Restoring the saved lesson before editing controls are available.
+        </p>
+      </section>
+    </div>
   );
 }

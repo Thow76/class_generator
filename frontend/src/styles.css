@@ -122,6 +122,10 @@ textarea[aria-invalid="true"] {
   background: var(--color-scaffold);
 }
 
+.app-shell--loading {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .sidebar {
   position: sticky;
   top: 0;
