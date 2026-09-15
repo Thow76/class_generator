@@ -51,9 +51,15 @@ export default function Sidebar({
 
       <section className="project-panel" aria-label="Project controls">
         <div className="project-panel__summary">
-          <span>Current lesson</span>
-          <strong>{projectControls.projectTitle}</strong>
-          <small>{projectControls.activeProjectId || "Not saved yet"}</small>
+          <span>{isProjectLoading ? "Loading lesson" : "Current lesson"}</span>
+          <strong>
+            {isProjectLoading ? "Restoring saved lesson..." : projectControls.projectTitle}
+          </strong>
+          <small>
+            {isProjectLoading
+              ? "Please wait"
+              : projectControls.activeProjectId || "Not saved yet"}
+          </small>
         </div>
 
         <div className="project-panel__actions">
@@ -108,20 +114,22 @@ export default function Sidebar({
           </button>
         </div>
 
-        <div
-          className={`project-status project-status--${projectControls.saveStatus}`}
-        >
-          <Icon>{projectControls.saveStatus === "saved" ? "check_circle" : "edit"}</Icon>
-          <span>
-            {saveLabel}
-            {savedAtLabel}
-          </span>
-        </div>
+        {!isProjectLoading && (
+          <div
+            className={`project-status project-status--${projectControls.saveStatus}`}
+          >
+            <Icon>{projectControls.saveStatus === "saved" ? "check_circle" : "edit"}</Icon>
+            <span>
+              {saveLabel}
+              {savedAtLabel}
+            </span>
+          </div>
+        )}
 
-        {projectControls.loadStatus === "loading" && (
+        {isProjectLoading && (
           <div className="project-status">
             <Icon>hourglass_bottom</Icon>
-            <span>Loading projects...</span>
+            <span>Loading lesson...</span>
           </div>
         )}
         {projectControls.loadStatus === "duplicating" && (
