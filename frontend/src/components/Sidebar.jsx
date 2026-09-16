@@ -1,4 +1,5 @@
 import Icon from "./Icon.jsx";
+import { getSidebarStageState } from "../utils/sidebarProjectDisplay.js";
 
 const stageIcon = {
   completed: "check_circle",
@@ -285,9 +286,12 @@ export default function Sidebar({
 
       <nav className="stage-nav" aria-label="Workflow stages">
         {stages.map((stage) => {
-          const isActive = currentStage === stage.id;
-          const isCompleted = completedStages.includes(stage.id);
-          const state = isActive ? "active" : isCompleted ? "completed" : "incomplete";
+          const state = getSidebarStageState({
+            completedStages,
+            currentStage,
+            isProjectLoading,
+            stageId: stage.id
+          });
 
           return (
             <button
